@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>系统设置 - 出门卡系统</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>⚙️ 系统设置</h2>
+        <p><a href="/admin/dashboard">← 返回管理面板</a></p>
+        <form method="POST" action="/admin/settings">
+            <label>全局默认有效期（YYYY-MM-DD）：</label>
+            <input type="date" name="defaultValidUntil" value="<%= defaultValidUntil %>" style="width: 200px;">
+            <button type="submit">保存设置</button>
+        </form>
+        <p style="margin-top: 20px; color: #666;">说明：设置后，新提交的学生记录将自动使用此有效期。管理员仍可单独修改每条记录的有效期。</p>
+        <% if (msg) { %>
+            <p style="color: green;"><%= msg %></p>
+        <% } %>
+    </div>
+</body>
+</html>
