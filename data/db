@@ -1,0 +1,21 @@
+{
+  "students": [
+    {
+      "id": 1779026661934,
+      "name": "孙沐尧",
+      "className": "S2C8",
+      "teacher": "陈小凡",
+      "mon": "10:35",
+      "tue": "11:25",
+      "wed": "12:15",
+      "thu": "16:40",
+      "fri": "15:00",
+      "validUntil": "2026-07-12",
+      "photo": "/uploads/1779026661933-594927407.jpg",
+      "createdAt": "2026-05-17T14:04:21.934Z"
+    }
+  ],
+  "settings": {
+    "defaultValidUntil": "2026-07-12"
+  }
+}
