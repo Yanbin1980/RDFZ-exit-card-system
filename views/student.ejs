@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>学生提交出门卡信息</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📋 学生离校时间登记</h1>
+        <form method="POST" action="/submit" enctype="multipart/form-data">
+            <label>姓名：</label><input type="text" name="name" required><br>
+            <label>年级：</label>
+            <select name="grade" required>
+                <option value="">请选择</option>
+                <option value="S2">S2</option>
+                <option value="S3">S3</option>
+            </select><br>
+            <label>班级：</label>
+            <select name="classNum" required>
+                <option value="">请选择</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+                <option value="C3">C3</option>
+                <option value="C4">C4</option>
+                <option value="C5">C5</option>
+                <option value="C6">C6</option>
+                <option value="C7">C7</option>
+                <option value="C8">C8</option>
+                <option value="C9">C9</option>
+                <option value="C10">C10</option>
+            </select><br>
+            <label>班主任：</label><input type="text" name="teacher" required><br>
+            <fieldset>
+                <legend>离校时间</legend>
+                <label>周一：</label>
+                <select name="mon" required>
+                    <option value="">请选择</option>
+                    <option value="9:30">9:30</option>
+                    <option value="10:35">10:35</option>
+                    <option value="11:25">11:25</option>
+                    <option value="12:15">12:15</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:10">14:10</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:50">15:50</option>
+                    <option value="16:40">16:40</option>
+                </select><br>
+                <label>周二：</label>
+                <select name="tue" required>
+                    <option value="">请选择</option>
+                    <option value="9:30">9:30</option>
+                    <option value="10:35">10:35</option>
+                    <option value="11:25">11:25</option>
+                    <option value="12:15">12:15</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:10">14:10</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:50">15:50</option>
+                    <option value="16:40">16:40</option>
+                </select><br>
+                <label>周三：</label>
+                <select name="wed" required>
+                    <option value="">请选择</option>
+                    <option value="9:30">9:30</option>
+                    <option value="10:35">10:35</option>
+                    <option value="11:25">11:25</option>
+                    <option value="12:15">12:15</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:10">14:10</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:50">15:50</option>
+                    <option value="16:40">16:40</option>
+                </select><br>
+                <label>周四：</label>
+                <select name="thu" required>
+                    <option value="">请选择</option>
+                    <option value="9:30">9:30</option>
+                    <option value="10:35">10:35</option>
+                    <option value="11:25">11:25</option>
+                    <option value="12:15">12:15</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:10">14:10</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:50">15:50</option>
+                    <option value="16:40">16:40</option>
+                </select><br>
+                <label>周五：</label>
+                <select name="fri" required>
+                    <option value="">请选择</option>
+                    <option value="9:30">9:30</option>
+                    <option value="10:35">10:35</option>
+                    <option value="11:25">11:25</option>
+                    <option value="12:15">12:15</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:10">14:10</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:50">15:50</option>
+                    <option value="16:40">16:40</option>
+                </select><br>
+            </fieldset>
+            <label>照片（一寸证件照）：</label><input type="file" name="photo" accept="image/*" required><br>
+            <button type="submit">提交申请</button>
+        </form>
+        <p style="margin-top:20px;"><a href="/admin/login">管理员登录</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>批量打印出门卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 屏幕预览样式 */
+        body {
+            background: #e2e2e2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .print-control {
+            margin-bottom: 20px;
+        }
+        /* 每个打印页容器 */
+        .print-page {
+            background: white;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            page-break-after: always;
+            break-after: page;
+        }
+        /* 卡片网格容器：用于在页面内水平和垂直居中 */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            width: 100%;
+            height: 100%;
+            min-height: 297mm;   /* A4 高度，用于屏幕预览 */
+        }
+        /* 卡片尺寸和间距 */
+        .card-item {
+            width: 54mm;
+            height: 85.6mm;
+            margin: 3mm;
+            background: white;
+            border: 1px solid #333;
+            padding: 2.5mm 2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-family: 'FangSong', '仿宋', STFangsong, 'Times New Roman', Times, serif;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            box-sizing: border-box;
+        }
+        /* 卡片内部样式（保持不变） */
+        .main-title {
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            font-size: 4mm;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            border-bottom: 0.5px solid #333;
+            padding-bottom: 1.5mm;
+            margin-bottom: 1.5mm;
+        }
+        .top-area {
+            display: flex;
+            gap: 2mm;
+            margin-bottom: 1.5mm;
+        }
+        .photo-frame {
+            width: 22mm;
+            height: 29mm;
+            border: 0.5px solid #666;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .photo-frame img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .no-photo {
+            font-size: 2.2mm;
+            color: #999;
+            text-align: center;
+        }
+        .info-text {
+            flex: 1;
+            font-size: 2.8mm;
+            line-height: 4.2mm;
+        }
+        .info-text div {
+            margin-bottom: 1mm;
+        }
+        .info-text .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 13mm;
+        }
+        .time-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 2.4mm;
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 1.5mm 0;
+        }
+        .time-table th, .time-table td {
+            border: 0.5px solid #333;
+            padding: 0.8mm 0;
+        }
+        .time-table th {
+            background-color: #f0f3f8;
+            font-weight: bold;
+        }
+        .valid-date {
+            text-align: right;
+            font-size: 2.5mm;
+            border-top: 0.5px dashed #aaa;
+            padding-top: 1.5mm;
+            margin-top: 0;
+        }
+        /* 打印样式：精确控制页面和居中 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;          /* 完全移除页边距 */
+            }
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            .print-page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+                break-after: page;
+            }
+            .cards-grid {
+                min-height: 297mm;   /* 固定高度为 A4 高度 */
+                height: 297mm;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;  /* 垂直居中 */
+                align-items: center;    /* 备用 */
+            }
+            .card-item {
+                margin: 3mm;
+                border: 1px solid #000;
+            }
+            .print-control, .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-control no-print">
+        <button onclick="window.print();">🖨️ 打印全部卡片 (A4 纸)</button>
+        <p style="margin-top: 8px;">
+            ⚠️ 打印设置：<br>
+            • 缩放：<strong>100%</strong>（实际大小）<br>
+            • 边距：<strong>无</strong><br>
+            • 纸张：A4，纵向<br>
+            • 取消页眉/页脚
+        </p>
+    </div>
+
+    <% 
+        // 将学生分成每页最多9个（3行x3列）
+        const pageSize = 9;
+        const pages = [];
+        for (let i = 0; i < students.length; i += pageSize) {
+            pages.push(students.slice(i, i + pageSize));
+        }
+        for (let p = 0; p < pages.length; p++) {
+            const pageStudents = pages[p];
+    %>
+        <div class="print-page">
+            <div class="cards-grid">
+                <% for (let s of pageStudents) { %>
+                    <div class="card-item">
+                        <div class="main-title">人大附中国际部<br>专用出门卡</div>
+                        <div class="top-area">
+                            <div class="photo-frame">
+                                <% if (s.photo) { %>
+                                    <img src="<%= s.photo %>" alt="学生照片">
+                                <% } else { %>
+                                    <div class="no-photo">一寸照片</div>
+                                <% } %>
+                            </div>
+                            <div class="info-text">
+                                <div><span class="label">姓名：</span><%= s.name %></div>
+                                <div><span class="label">班级：</span><%= s.className %></div>
+                                <div><span class="label">班主任：</span><%= s.teacher %></div>
+                            </div>
+                        </div>
+                        <table class="time-table">
+                            <thead>
+                                <tr><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><%= s.mon %></td>
+                                    <td><%= s.tue %></td>
+                                    <td><%= s.wed %></td>
+                                    <td><%= s.thu %></td>
+                                    <td><%= s.fri %></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="valid-date">
+                            有效期至：<strong><%= s.validUntil %></strong>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="no-print" style="margin-top: 20px; text-align: center;">
+        <button onclick="window.close();">关闭窗口</button>
+    </div>
+</body>
+</html>

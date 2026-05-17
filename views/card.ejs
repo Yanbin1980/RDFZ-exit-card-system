@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>出门卡 - <%= student.name %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .card {
+            width: 54mm;
+            height: 85.6mm;
+            background: white;
+            border: 1px solid #333;
+            padding: 2.5mm 2mm;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-family: 'FangSong', '仿宋', STFangsong, 'Times New Roman', Times, serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .main-title {
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            font-size: 4mm;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            border-bottom: 0.5px solid #333;
+            padding-bottom: 1.5mm;
+            margin-bottom: 1.5mm;
+        }
+        .top-area {
+            display: flex;
+            gap: 2mm;
+            margin-bottom: 1.5mm;
+        }
+        .photo-frame {
+            width: 22mm;
+            height: 29mm;
+            border: 0.5px solid #666;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .photo-frame img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .no-photo {
+            font-size: 2.2mm;
+            color: #999;
+            text-align: center;
+        }
+        .info-text {
+            flex: 1;
+            font-size: 2.8mm;
+            line-height: 4.2mm;
+        }
+        .info-text div {
+            margin-bottom: 1mm;
+        }
+        .info-text .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 13mm;
+        }
+        .time-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 2.4mm;
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 1.5mm 0;
+        }
+        .time-table th, .time-table td {
+            border: 0.5px solid #333;
+            padding: 0.8mm 0;
+        }
+        .time-table th {
+            background-color: #f0f3f8;
+            font-weight: bold;
+        }
+        .valid-date {
+            text-align: right;
+            font-size: 2.5mm;
+            border-top: 0.5px dashed #aaa;
+            padding-top: 1.5mm;
+            margin-top: 0;
+        }
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #000;
+                page-break-after: avoid;
+                break-inside: avoid;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .print-btn {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        button {
+            font-size: 12px;
+            padding: 4px 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="print-btn no-print">
+            <button onclick="window.print();">🖨️ 打印 / 保存为PDF</button>
+            <p style="font-size: 10px; margin-top: 4px;">打印时选择“实际大小”，纸张纵向。</p>
+        </div>
+        <div class="card">
+            <div class="main-title">人大附中国际部<br>专用出门卡</div>
+            
+            <div class="top-area">
+                <div class="photo-frame">
+                    <% if (student.photo) { %>
+                        <img src="<%= student.photo %>" alt="学生照片">
+                    <% } else { %>
+                        <div class="no-photo">一寸照片</div>
+                    <% } %>
+                </div>
+                <div class="info-text">
+                    <div><span class="label">姓名：</span><%= student.name %></div>
+                    <div><span class="label">班级：</span><%= student.className %></div>
+                    <div><span class="label">班主任：</span><%= student.teacher %></div>
+                </div>
+            </div>
+
+            <table class="time-table">
+                <thead>
+                    <tr><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><%= student.mon %></td>
+                        <td><%= student.tue %></td>
+                        <td><%= student.wed %></td>
+                        <td><%= student.thu %></td>
+                        <td><%= student.fri %></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="valid-date">
+                有效期至：<strong><%= student.validUntil %></strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

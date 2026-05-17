@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理后台 - 出门卡记录</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .batch-print-bar {
+            margin: 15px 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-batch {
+            background: #1e3c72;
+            color: white;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-batch:hover {
+            background: #0f2b4f;
+        }
+        .btn-delete-batch {
+            background: #c0392b;
+        }
+        .btn-delete-batch:hover {
+            background: #a82315;
+        }
+        .select-all {
+            margin-left: auto;
+        }
+        .edit-valid-btn, .delete-single-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 5px;
+            color: #1e3c72;
+        }
+        .delete-single-btn {
+            color: #c0392b;
+        }
+        .valid-text {
+            font-family: monospace;
+        }
+        table {
+            font-size: 14px;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📌 所有学生记录</h2>
+        <div class="batch-print-bar">
+            <button id="batchPrintBtn" class="btn-batch">🖨️ 批量打印所选记录</button>
+            <button id="batchDeleteBtn" class="btn-batch btn-delete-batch">🗑️ 批量删除所选记录</button>
+            <label class="select-all">
+                <input type="checkbox" id="selectAllCheckbox"> 全选
+            </label>
+            <a href="/admin/export" class="btn" style="background: #2c6e2c;">⬇️ 导出 CSV</a>
+            <a href="/admin/settings" class="btn" style="background: #555;">⚙️ 系统设置</a>
+            <a href="/admin/logout" style="margin-left: auto;">[退出登录]</a>
+        </div>
+        
+        <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAllHeader"></th>
+                    <th>姓名</th><th>班级</th><th>班主任</th>
+                    <th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th>
+                    <th>有效期</th>
+                    <th>提交时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% students.forEach(s => { %>
+                <tr>
+                    <td><input type="checkbox" class="student-checkbox" data-id="<%= s.id %>"></td>
+                    <td><%= s.name %></td>
+                    <td><%= s.className %></td>
+                    <td><%= s.teacher %></td>
+                    <td><%= s.mon %></td>
+                    <td><%= s.tue %></td>
+                    <td><%= s.wed %></td>
+                    <td><%= s.thu %></td>
+                    <td><%= s.fri %></td>
+                    <td>
+                        <span id="valid-<%= s.id %>" class="valid-text"><%= s.validUntil || '未设置' %></span>
+                        <button class="edit-valid-btn" data-id="<%= s.id %>" data-valid="<%= s.validUntil || '' %>">✏️</button>
+                    </td>
+                    <td><%= new Date(s.createdAt).toLocaleString() %></td>
+                    <td>
+                        <a href="/admin/card/<%= s.id %>" target="_blank">🖨️ 生成单张</a>
+                        <button class="delete-single-btn" data-id="<%= s.id %>">🗑️ 删除</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 全选逻辑
+        const selectAllHeader = document.getElementById('selectAllHeader');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+        
+        function updateSelectAll() {
+            const allChecked = Array.from(studentCheckboxes).every(cb => cb.checked);
+            selectAllHeader.checked = allChecked;
+            selectAllCheckbox.checked = allChecked;
+        }
+        
+        selectAllHeader.addEventListener('change', function(e) {
+            studentCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            selectAllCheckbox.checked = e.target.checked;
+        });
+        
+        selectAllCheckbox.addEventListener('change', function(e) {
+            studentCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            selectAllHeader.checked = e.target.checked;
+        });
+        
+        studentCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateSelectAll);
+        });
+        
+        // 批量打印
+        const batchPrintBtn = document.getElementById('batchPrintBtn');
+        batchPrintBtn.addEventListener('click', function() {
+            const selectedIds = Array.from(studentCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.getAttribute('data-id'));
+            if (selectedIds.length === 0) {
+                alert('请至少选择一条记录');
+                return;
+            }
+            const url = '/admin/batch-print?ids=' + selectedIds.join(',');
+            window.open(url, '_blank');
+        });
+        
+        // 编辑有效期
+        document.querySelectorAll('.edit-valid-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.getAttribute('data-id');
+                const currentValid = this.getAttribute('data-valid');
+                const newValid = prompt('请输入有效期（格式：YYYY-MM-DD）', currentValid);
+                if (newValid && newValid.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    const response = await fetch('/admin/update-valid', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id, validUntil: newValid })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        document.getElementById(`valid-${id}`).innerText = newValid;
+                        this.setAttribute('data-valid', newValid);
+                        alert('有效期已更新');
+                    } else {
+                        alert('更新失败：' + (result.error || '未知错误'));
+                    }
+                } else if (newValid) {
+                    alert('日期格式错误，应为 YYYY-MM-DD');
+                }
+            });
+        });
+        
+        // 删除单条记录
+        document.querySelectorAll('.delete-single-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.getAttribute('data-id');
+                if (confirm('确定要删除这条记录吗？此操作不可恢复。')) {
+                    const response = await fetch('/admin/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: parseInt(id) })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('删除成功');
+                        location.reload(); // 刷新页面
+                    } else {
+                        alert('删除失败：' + (result.error || '未知错误'));
+                    }
+                }
+            });
+        });
+        
+        // 批量删除
+        const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+        batchDeleteBtn.addEventListener('click', async function() {
+            const selectedCheckboxes = Array.from(studentCheckboxes).filter(cb => cb.checked);
+            if (selectedCheckboxes.length === 0) {
+                alert('请至少选择一条记录');
+                return;
+            }
+            const ids = selectedCheckboxes.map(cb => parseInt(cb.getAttribute('data-id')));
+            if (confirm(`确定要删除 ${ids.length} 条记录吗？此操作不可恢复。`)) {
+                const response = await fetch('/admin/batch-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: ids })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(`成功删除 ${result.deletedCount} 条记录`);
+                    location.reload();
+                } else {
+                    alert('删除失败：' + (result.error || '未知错误'));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
